@@ -1,0 +1,11 @@
+# Gitignore
+
+# Library output:
+*.so
+# Compilation files:
+*.o
+*.ppu
+
+# Directories:
+**/bin/
+**/lib/
