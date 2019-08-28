@@ -8,8 +8,9 @@ uses
             cthreads,
         {$ENDIF}
     {$ENDIF}
-    GDNative,
-    GodotNativescript,
+    GDNativeApi,
+    GDNativeInternal,
+    GodotObject,
     GodotVariant,
     GodotArray;
 
@@ -25,18 +26,29 @@ begin
     WriteLn('TestDestructor called.');
 end;
 
-function TestReady(GodotObject: PGodotObject; MethodData, UserData: Pointer; ParameterCount: Integer; Parameters: PPGodotVariant): TGodotVariant; cdecl;
+function TestReady (GodotObject: PGodotObject; MethodData, UserData: Pointer; ParameterCount: Integer; Parameters: PPGodotVariant): TGodotVariant; cdecl;
 begin
-    godot_variant_new_nil(@Result);
     WriteLn('TestReady called.');
+
+    GodotGDNativeCoreApi.GodotVariantNewNil(@Result);
+
+    WriteLn(Result._dont_touch_that[0]);
 end;
 
-procedure godot_gdnative_init (Options: Pointer); cdecl;
+procedure godot_gdnative_init (OptionsPointer: PGodotGDNativeInitOptions); cdecl;
+var
+    Options: TGodotGDNativeInitOptions;
 begin
+    WriteLn('gdnative_init called.');
+
+    Options := OptionsPointer^;
+
+    GodotApiExtraction(Options.GodotGDNativeCoreApi);
 end;
 
 procedure godot_gdnative_terminate (Options: Pointer); cdecl;
 begin
+    WriteLn('gdnative_terminate called.');
 end;
 
 procedure godot_nativescript_init (GDNativeHandle: Pointer); cdecl;
@@ -45,26 +57,31 @@ var
     DestroyFunction: TGodotInstanceDestroyFunction;
     Method: TGodotInstanceMethod;
     Attributes: TGodotMethodAttributes;
+    ClassName, BaseClass, FunctionName: PChar;
 begin
-    WriteLn('Nativescript Init');
+    WriteLn('Nativescript_init called.');
 
     CreateFunction.CreateFunction := @TestConstructor;
     DestroyFunction.DestroyFunction := @TestDestructor;
 
-    godot_nativescript_register_class(GDNativeHandle, 'TestClass', 'Node', CreateFunction, DestroyFunction);
+    ClassName := 'TestClass';
+    BaseClass := 'Node';
+
+    GodotGDNativeExtensionNativescriptApi.GodotNativescriptRegisterClass(GDNativeHandle, ClassName, BaseClass, CreateFunction, DestroyFunction);
 
     Method.Method := @TestReady;
     Attributes.RpcType := GodotMethodRpcModeDisabled;
 
-    godot_nativescript_register_method(GDNativeHandle, 'TestClass', '_ready', Attributes, Method);
+    FunctionName := '_ready';
+
+    GodotGDNativeExtensionNativescriptApi.GodotNativescriptRegisterMethod(GDNativeHandle, ClassName, FunctionName, Attributes, Method);
 end;
 
 function some_test_procedure (Data: Pointer; Parameters: PGodotArray): TGodotVariant; cdecl;
 var
     TestInt: TGodotVariant;
 begin
-    godot_variant_new_int(@TestInt, 42);
-
+    GodotGDNativeCoreApi.GodotVariantNewInt(@TestInt, 42);
     Result := TestInt;
 end;
 

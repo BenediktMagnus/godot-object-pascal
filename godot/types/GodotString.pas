@@ -1,5 +1,11 @@
 unit GodotString;
 
+{$mode objfpc}{$H+}
+
+{$IFDEF FPC}
+    {$PACKRECORDS C}
+{$ENDIF}
+
 interface
 
 const

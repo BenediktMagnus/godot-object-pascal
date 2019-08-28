@@ -1,13 +1,14 @@
-unit GDNative;
+unit GodotObject;
 
 {$mode objfpc}{$H+}
 
+{$IFDEF FPC}
+    {$PACKRECORDS C}
+{$ENDIF}
+
 interface
 
-const GodoApiVersion = 1;
-
 type
-    PPGodotObject = ^PGodotObject;
     PGodotObject = ^TGodotObject;
     TGodotObject = Pointer;
 

@@ -1,5 +1,11 @@
 unit GodotArray;
 
+{$mode objfpc}{$H+}
+
+{$IFDEF FPC}
+    {$PACKRECORDS C}
+{$ENDIF}
+
 interface
 
 const
