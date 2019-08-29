@@ -31,8 +31,6 @@ begin
     WriteLn('TestReady called.');
 
     GodotGDNativeCoreApi.GodotVariantNewNil(@Result);
-
-    WriteLn(Result._dont_touch_that[0]);
 end;
 
 procedure godot_gdnative_init (OptionsPointer: PGodotGDNativeInitOptions); cdecl;
@@ -61,7 +59,10 @@ var
 begin
     WriteLn('Nativescript_init called.');
 
+    CreateFunction := Default(TGodotInstanceCreateFunction);
     CreateFunction.CreateFunction := @TestConstructor;
+
+    DestroyFunction := Default(TGodotInstanceDestroyFunction);
     DestroyFunction.DestroyFunction := @TestDestructor;
 
     ClassName := 'TestClass';
@@ -69,7 +70,9 @@ begin
 
     GodotGDNativeExtensionNativescriptApi.GodotNativescriptRegisterClass(GDNativeHandle, ClassName, BaseClass, CreateFunction, DestroyFunction);
 
+    Method := Default(TGodotInstanceMethod);
     Method.Method := @TestReady;
+
     Attributes.RpcType := GodotMethodRpcModeDisabled;
 
     FunctionName := '_ready';
