@@ -45,6 +45,24 @@ const
 	GodotMethodRpcModeSlave = GodotMethodRpcModePuppet;
 	GodotMethodRpcModeSync = GodotMethodRpcModeRemotesync;
 
+type
+    TReportVersionMismatch = procedure (LibraryPointer: PGodotObject; Reason: PChar; ExpectedVersion, FoundVersion: TGodotGDNativeApiVersion); cdecl;
+    TReportLoadingError = procedure (LibraryPointer: PGodotObject; Reason: PChar); cdecl;
+
+type
+    PGodotGDNativeInitOptions = ^TGodotGDNativeInitOptions;
+    TGodotGDNativeInitOptions = record
+        InEditor: Boolean;
+        CoreApiHash: Int64;
+        EditorApiHash: UInt64;
+        NoApiHash: UInt64;
+        ReportVersionMismatch: TReportVersionMismatch;
+        ReportLoadingError: TReportLoadingError;
+        GDNativeLibrary: PGodotObject; // Pointer to the GDNativeLibrary that is being initialised.
+        GodotGDNativeCoreApi: PGodotGDNativeCoreApi;
+        ActiveLibraryPath: PGodotString;
+    end;
+
 // Method instance functions:
 type
     TCreateFunction = function (InstancePointer: PGodotObject; MethodData: Pointer): Pointer; cdecl; // Returns UserData
@@ -68,7 +86,7 @@ type
         RpcType: GodotMethodRpcMode;
     end;
     TGodotInstanceMethod = record
-        Method: TMethod;
+        Method: TMethod; // NOTE: If we change this to a generic pointer type, we could put in any function/procedure, even static ones from classes...
         MethodData: Pointer;
         FreeFuncton: TFreeFunction;
     end;

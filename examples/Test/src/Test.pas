@@ -9,7 +9,6 @@ uses
         {$ENDIF}
     {$ENDIF}
     GDNativeApi,
-    GDNativeInternal,
     GodotObject,
     GodotVariant,
     GodotArray;
